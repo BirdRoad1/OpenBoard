@@ -1,26 +1,27 @@
 import express from "express";
-import { apiRoute } from "./routes/api.route.js";
-import swaggerUi from "swagger-ui-express";
-import fs from "fs";
+import { apiRoute } from "./routes/api/index.route.js";
+import { docsRoute } from "./routes/docs.route.js";
+import z from "zod";
+
+try {
+  await import("dotenv/config");
+} catch {
+  /* */
+}
 
 const app = express();
 
-if (fs.existsSync("swagger.json")) {
-  try {
-    const swaggerDocument = JSON.parse(
-      fs.readFileSync("swagger.json", "utf-8")
-    );
-    console.log(swaggerDocument);
-    app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-  } catch (err) {
-    console.error("Failed to setup swagger:", err);
-  }
-} else {
-  app.use("/docs", (req, res) => {
-    res.status(500).json({ error: "Swagger docs unavailable" });
-  });
-  console.error("No swagger.json, failed to setup swagger!");
-}
+z.config({
+  customError: (iss) => {
+    switch (iss.code) {
+      case "invalid_type":
+        return `Invalid type for ${iss.path}, expected ${iss.expected}`;
+    }
+    return undefined;
+  },
+});
+
+app.use("/docs", docsRoute);
 
 app.use("/api/v1/", apiRoute);
 
