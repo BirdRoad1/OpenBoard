@@ -1,6 +1,6 @@
 import express from "express";
 import { messagesController } from "../../controllers/api/messages.controller.js";
-import { validateData } from "../../middleware/validation-middlware.js";
+import { validateData } from "../../middleware/validation.middleware.js";
 import { postMessageSchema } from "../../schema/messages.schema.js";
 
 export const messagesRoute = express.Router();

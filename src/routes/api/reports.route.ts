@@ -1,16 +1,21 @@
 import express from 'express';
 import { reportsController } from '../../controllers/api/reports.controller.js';
-import { authMiddleware } from '../../middleware/auth-middleware.js';
+import { authMiddleware } from '../../middleware/auth.middleware.js';
+import { validateData } from '../../middleware/validation.middleware.js';
+import { createReportSchema } from '../../schema/reports.schema.js';
 
 export const reportsRoute = express.Router();
 
-reportsRoute.use(authMiddleware({ adminOnly: true }));
+reportsRoute.get(
+  '/',
+  authMiddleware({ adminOnly: true }),
+  reportsController.getReports
+);
 
-reportsRoute.get('/', reportsController.getReports);
-// TODO: post report
-// reportsRoute.post(
-//   "/",
-//   express.json(),
-//   validateData(postUserSchema),
-//   reportsController.postUser
-// );
+reportsRoute.post(
+  '/',
+  authMiddleware(),
+  express.json(),
+  validateData(createReportSchema),
+  reportsController.postReport
+);

@@ -1,6 +1,6 @@
 import { db } from '../db/db.js';
-import { messages, reports, users } from '../db/schema.js';
-import { and, eq, sql, type SQLWrapper } from 'drizzle-orm';
+import { reports, users } from '../db/schema.js';
+import { eq } from 'drizzle-orm';
 
 async function createReport(
   messageId: number,

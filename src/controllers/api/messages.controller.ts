@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import type { RequestHandlerWithBody } from "../../middleware/validation-middlware.js";
+import type { RequestHandlerWithBody } from "../../middleware/validation.middleware.js";
 import type { postMessageSchema } from "../../schema/messages.schema.js";
 import { Message } from "../../repository/message.repository.js";
 
