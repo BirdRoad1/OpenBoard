@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8080/api/v1"
+      "url": "http://localhost:8000/api/v1"
     }
   ],
   "paths": {
@@ -31,12 +31,10 @@
                     "summary": "Example user list",
                     "value": [
                       {
-                        "id": 1,
-                        "title": "Hello!",
-                        "content": "Is this thing on?",
-                        "authorName": "John",
-                        "authorId": 1,
-                        "createdAt": "2025-08-15T23:43:03.915Z"
+                        "id": 8,
+                        "username": "John",
+                        "bio": null,
+                        "createdAt": "2025-08-16T01:21:38.572Z"
                       }
                     ]
                   }
@@ -69,12 +67,7 @@
           "201": {
             "description": "User created successfully"
           }
-        },
-        "security": [
-          {
-            "bearerToken": []
-          }
-        ]
+        }
       }
     },
     "/users/{id}": {
@@ -128,7 +121,7 @@
             "type": "integer"
           },
           "required": true,
-          "description": "Numeric id for the message to delete"
+          "description": "Numeric id for the user to delete"
         }
       ]
     },
@@ -187,6 +180,33 @@
       }
     },
     "/messages/{id}": {
+      "get": {
+        "summary": "Get message",
+        "description": "Retrieves a single message",
+        "responses": {
+          "200": {
+            "description": "A message object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                },
+                "example": {
+                  "id": 31,
+                  "title": "Hello, world!",
+                  "content": null,
+                  "authorName": null,
+                  "authorId": null,
+                  "createdAt": "2025-08-16T00:58:00.565Z"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No message with the specified id was found"
+          }
+        }
+      },
       "delete": {
         "summary": "Soft delete a message",
         "responses": {
@@ -214,6 +234,72 @@
           "description": "Numeric id for the message to delete"
         }
       ]
+    },
+    "/reports": {
+      "get": {
+        "summary": "Get all reports",
+        "description": "Retrieves an array of reports. Requires admin privileges.",
+        "responses": {
+          "200": {
+            "description": "A list of reports",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Report"
+                  }
+                },
+                "examples": {
+                  "default": {
+                    "summary": "Example report",
+                    "value": [
+                      {
+                        "id": 1,
+                        "messageId": 12,
+                        "description": "Being rude",
+                        "sourceIP": "::1",
+                        "sourceUserAgent": "bruno-runtime/2.9.0",
+                        "sourceUserId": 8,
+                        "sourceUserName": "John",
+                        "createdAt": "2025-08-16T17:59:41.194Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create a new report",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReport"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The report may have been created successfully. If the message ID is invalid, no report was created."
+          }
+        },
+        "security": [
+          {
+            "bearerToken": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -284,8 +370,7 @@
             "type": "string",
             "description": "The user's bio"
           }
-        },
-        "required": []
+        }
       },
       "Message": {
         "type": "object",
@@ -326,12 +411,72 @@
         "type": "object",
         "properties": {
           "title": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 128
           },
           "content": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 500
           }
         }
+      },
+      "Report": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "messageId": {
+            "type": "number",
+            "nullable": true
+          },
+          "description": {
+            "type": "string"
+          },
+          "sourceIP": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceUserAgent": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceUserId": {
+            "type": "integer",
+            "nullable": true
+          },
+          "sourceUserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "messageId",
+          "description",
+          "sourceUserId",
+          "sourceIP",
+          "sourceUserAgent",
+          "sourceUserName",
+          "createdAt"
+        ]
+      },
+      "CreateReport": {
+        "type": "object",
+        "properties": {
+          "messageId": {
+            "type": "integer"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": ["messageId", "description"]
       }
     }
   }
