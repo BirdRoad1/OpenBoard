@@ -1,18 +1,20 @@
 {
   "name": "openboard",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc && cp package.json dist/",
+    "build": "pnpm clean && tsc && cp swagger.json package.json dist/",
     "dev": "tsx --watch src/index.ts",
+    "clean": "rm -rf dist",
     "migrate": "NODE_ENV=production drizzle-kit push && node seed/admin.js",
-    "migrate:dev": "drizzle-kit push && tsx seed/admin.ts"
+    "migrate:dev": "drizzle-kit push && tsx seed/admin.ts",
+    "package": "rm dist.tar.gz 2>/dev/null; tar -czf dist.tar.gz dist/"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "packageManager": "pnpm@10.14.0",
   "devDependencies": {
     "@eslint/js": "^9.33.0",
@@ -21,7 +23,6 @@
     "@types/node": "^24.3.0",
     "@types/pg": "^8.15.5",
     "@types/swagger-ui-express": "^4.1.8",
-    "drizzle-kit": "^0.31.4",
     "eslint": "^9.33.0",
     "tsx": "^4.20.4",
     "typescript": "^5.9.2",
@@ -30,6 +31,7 @@
   "dependencies": {
     "dotenv": "^17.2.1",
     "drizzle-orm": "^0.44.4",
+    "drizzle-kit": "^0.31.4",
     "express": "^5.1.0",
     "express-rate-limit": "^8.0.1",
     "jsonwebtoken": "^9.0.2",
