@@ -5,8 +5,8 @@ import { eq } from 'drizzle-orm';
 async function createReport(
   messageId: number,
   description: string,
-  sourceIP: string,
-  sourceUserAgent: string,
+  sourceIP?: string,
+  sourceUserAgent?: string,
   sourceUserId?: number
 ) {
   const [row] = await db
@@ -35,7 +35,8 @@ async function getAll() {
       sourceIP: reports.sourceIP,
       sourceUserAgent: reports.sourceUserAgent,
       sourceUserId: reports.sourceUserId,
-      sourceUserName: users.username
+      sourceUserName: users.username,
+      createdAt: reports.createdAt
     })
     .from(reports)
     .leftJoin(users, eq(users.id, reports.sourceUserId));

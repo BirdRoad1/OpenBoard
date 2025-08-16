@@ -20,8 +20,8 @@ const postReport: RequestHandlerWithBody<typeof createReportSchema> = async (
 
   const message = await Message.get(messageId);
 
-  const sourceIP = req.ip ?? 'unknown ip';
-  const userAgent = req.header('user-agent') ?? '';
+  const sourceIP = req.ip;
+  const userAgent = req.header('user-agent');
   const userId = res.locals.user?.id;
 
   if (message !== null) {
@@ -33,10 +33,11 @@ const postReport: RequestHandlerWithBody<typeof createReportSchema> = async (
       userId
     );
   }
-  
+
   // Prevent leaking soft-deleted post ids by always returning success
-  res.json({
-    message: 'Thank you for your report! It will be reviewed soon...'
+  res.status(201).json({
+    message:
+      'Thank you for your report! If the message ID is correct, it will be reviewed soon™.'
   });
 };
 

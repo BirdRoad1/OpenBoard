@@ -13,6 +13,10 @@ try {
 
 const app = express();
 
+if (env.TRUST_PROXY) {
+  app.enable('trust proxy');
+}
+
 z.config({
   customError: iss => {
     switch (iss.code) {
@@ -32,6 +36,22 @@ app.get('/', (req, res) => {
     message: `Welcome to OpenBoard! For documentation, visit ${req.protocol}://${req.host}/docs`
   });
 });
+
+app.use((req, res, _next) => {
+  res.status(404).json({ message: 'Not found' });
+});
+
+app.use(
+  (
+    err: Error,
+    req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction
+  ) => {
+    console.error('Internal server error', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+);
 
 app.listen(env.PORT, () => {
   console.log(`Listening on http://localhost:${env.PORT}/`);
